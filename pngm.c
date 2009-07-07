@@ -161,7 +161,7 @@ process (char const *srcfn, char const *dstfn)
 }
 
 
-#define BUF_SIZE (4 * 1024)
+#define BUF_SIZE (32 * 1024)
 static size_t
 copy_bytes (FILE *dst, FILE *src,  size_t n)
 {
