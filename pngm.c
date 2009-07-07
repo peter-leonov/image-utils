@@ -35,10 +35,10 @@ dst <<= 8; \
 dst += src.d;
 
 #define to_net32(dst, src) \
-dst.a = src & 0xF; \
-dst.b = src >> 8 & 0xF; \
-dst.c = src >> 16 & 0xF; \
-dst.d = src >> 24 & 0xF;
+dst.d = src & 0xFF; \
+dst.c = src >> 8 & 0xFF; \
+dst.b = src >> 16 & 0xFF; \
+dst.a = src >> 24 & 0xFF;
 
 
 typedef struct net32_s net32_t;
@@ -118,12 +118,12 @@ process (char const *srcfn, char const *dstfn)
 		if (memcmp(name, "IDAT", 4) == 0)
 		{
 			char *bkgd_name = "bKGD";
-			color48_t bkgd_color = {0, 0, 0, 0, 0, 0};
+			color48_t bkgd_color = {0, 255, 0, 255, 0, 255};
 			
 			net32_t bkgd_size_net;
 			net32_t bkgd_crc_net;
 			size_t bkgd_size = sizeof(bkgd_color);
-			unsigned long bkgd_crc = compute_crc(&bkgd_color, 0);
+			unsigned long bkgd_crc = compute_crc(&bkgd_color, sizeof(bkgd_color));
 			
 			printf("+ %s size: %4zd, crc: %10lu\n", bkgd_name, bkgd_size, bkgd_crc);
 			
