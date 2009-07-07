@@ -100,7 +100,7 @@ process (char const *srcfn, char const *dstfn)
 	
 	if (memcmp(png_header, header, 8) != 0)
 	{
-		fprintf(stderr, "WARNING: Invalid header in %s: '%s'\n", srcfn, header);
+		fprintf(stderr, "ERROR: Invalid header in %s: '%s'\n", srcfn, header);
 	}
 	
 	fwrite(header, 8, 1, dst);
