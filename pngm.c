@@ -116,12 +116,8 @@ process (char const *srcfn, char const *dstfn)
 		
 		
 		printf("%s %-4zd (%d %d %d %d)\n", name, size, chunk_size.a, chunk_size.b, chunk_size.c, chunk_size.d);
-		fseek(src, size + 4, SEEK_CUR);
 	}
 	
-	
-	/* code */
-	// printf("%s\n", "Hi!");
 	return 0;
 }
 
@@ -130,18 +126,22 @@ process (char const *srcfn, char const *dstfn)
 static size_t
 copy_bytes (FILE *dst, FILE *src,  size_t n)
 {
-	u_char *buf = malloc(BUF_SIZE);
+	static u_char *buf = NULL;
 	if (buf == NULL)
-		return 0;
+	{
+		buf = malloc(BUF_SIZE);
+		if (buf == NULL)
+			return 0;
+	}
 	
 	size_t total = n, copied;
-	printf("%zd\n", n);
+	
 	while (n > BUF_SIZE)
 	{
 		if ((copied = fread(buf, 1, BUF_SIZE, src)) < 1)
 			goto DONE;
 		fwrite(buf, 1, BUF_SIZE, dst);
-		printf("%zd\n", copied);
+		
 		n -= copied;
 	}
 	
@@ -150,6 +150,5 @@ copy_bytes (FILE *dst, FILE *src,  size_t n)
 	fwrite(buf, 1, n, dst);
 	
 	DONE:
-	free(buf);
 	return total - n;
 }
