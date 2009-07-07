@@ -94,13 +94,13 @@ process (char const *srcfn, char const *dstfn)
 	
 	if (fread(header, 8, 1, src) < 1)
 	{
-		fprintf(stderr, "ERROR: Can't read header from %s: %s", srcfn, header);
+		fprintf(stderr, "ERROR: Can't read header from %s: %s\n", srcfn, header);
 		return 4;
 	}
 	
 	if (memcmp(png_header, header, 8) != 0)
 	{
-		fprintf(stderr, "WARNING: Invalid header in %s: %s", srcfn, header);
+		fprintf(stderr, "WARNING: Invalid header in %s: '%s'\n", srcfn, header);
 	}
 	
 	fwrite(header, 8, 1, dst);
