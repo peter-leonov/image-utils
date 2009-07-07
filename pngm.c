@@ -76,14 +76,14 @@ process (char const *srcfn, char const *dstfn)
 	src  = fopen(srcfn,  "rb");
 	if (src == NULL)
 	{
-		fprintf(stderr, "ERROR: Can't open %s for reading\n", srcfn);
+		perror("ERROR: Can't open src file for reading");
 		return 2;
 	}
 	
 	dst = fopen(dstfn, "wb");
 	if (dst == NULL)
 	{
-		fprintf(stderr, "ERROR: Can't open %s for writing\n", dstfn);
+		perror("ERROR: Can't open dst file for writing");
 		return 3;
 	}
 	
