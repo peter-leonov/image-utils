@@ -13,6 +13,7 @@ struct net32_s
 	u_char c;
 	u_char d;
 };
+typedef struct net32_s net32_t;
 
 struct color48_s
 {
@@ -23,6 +24,14 @@ struct color48_s
 	u_char b1;
 	u_char b2;
 };
+typedef struct color48_s color48_t;
+
+struct bkgd_chunk_s
+{
+	u_char name[4];
+	color48_t color;
+};
+typedef struct bkgd_chunk_s bkgd_chunk_t;
 
 #define from_net32(dst, src) \
 dst = 0; \
@@ -39,10 +48,6 @@ dst.d = src & 0xFF; \
 dst.c = src >> 8 & 0xFF; \
 dst.b = src >> 16 & 0xFF; \
 dst.a = src >> 24 & 0xFF;
-
-
-typedef struct net32_s net32_t;
-typedef struct color48_s color48_t;
 
 
 char *png_header = "\x89PNG\x0D\x0A\x1A\x0A";
@@ -117,22 +122,24 @@ process (char const *srcfn, char const *dstfn)
 		
 		if (memcmp(name, "IDAT", 4) == 0)
 		{
-			char *bkgd_name = "bKGD";
+			bkgd_chunk_t bkgd;
+			memcpy(bkgd.name, "bKGD", 4);
 			color48_t bkgd_color = {0, 255, 0, 255, 0, 255};
+			memcpy(&bkgd.color, &bkgd_color, sizeof(bkgd.color));
 			
 			net32_t bkgd_size_net;
 			net32_t bkgd_crc_net;
-			size_t bkgd_size = sizeof(bkgd_color);
-			unsigned long bkgd_crc = compute_crc(&bkgd_color, sizeof(bkgd_color));
+			size_t bkgd_size = sizeof(bkgd.color);
+			unsigned long bkgd_crc = compute_crc(&bkgd, sizeof(bkgd));
 			
-			printf("+ %s size: %4zd, crc: %10lu\n", bkgd_name, bkgd_size, bkgd_crc);
+			printf("+ %s size: %6zd, crc: %10lu\n", bkgd.name, bkgd_size, bkgd_crc);
 			
 			to_net32(bkgd_size_net, bkgd_size);
 			to_net32(bkgd_crc_net, bkgd_crc);
 			
 			fwrite(&bkgd_size_net, sizeof(bkgd_size_net), 1, dst);
-			fwrite(bkgd_name, 4, 1, dst);
-			fwrite(&bkgd_color, sizeof(bkgd_color), 1, dst);
+			fwrite(bkgd.name, 4, 1, dst);
+			fwrite(&bkgd.color, sizeof(bkgd.color), 1, dst);
 			fwrite(&bkgd_crc_net, sizeof(bkgd_crc_net), 1, dst);
 		}
 		
@@ -147,7 +154,7 @@ process (char const *srcfn, char const *dstfn)
 		
 		
 		// printf("  %s size: %-4zd (%-2d %-2d %-2d %-2d), crc: %u\n", name, size, size_net.a, size_net.b, size_net.c, size_net.d, crc);
-		printf("  %s size: %4zd, crc: %10lu\n", name, size, crc);
+		printf("  %s size: %6zd, crc: %10lu\n", name, size, crc);
 	}
 	
 	return 0;
