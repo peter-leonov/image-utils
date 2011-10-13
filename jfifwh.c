@@ -11,7 +11,7 @@ process (char const *srcfn)
 {
 	int fd;
 	u_char *data;
-	size_t data_length;
+	size_t data_length, i;
 	struct stat fs;
 	
 	fd = open(srcfn,  O_RDONLY);
@@ -27,11 +27,23 @@ process (char const *srcfn)
 	
 	data = mmap(0, data_length, PROT_READ, MAP_SHARED, fd, 0);
 	
-	if (((int32_t *) data)[0] != 0xe0ffd8ff)
+	i = 0;
+	
+	if (*((int32_t *) &data[i]) != 0xe0ffd8ff)
 	{
-		fprintf(stderr, "ERROR: File has no JFIF for header\n");
+		fprintf(stderr, "ERROR: File has no proper file header\n");
 		return 3;
 	}
+	
+	i += 4;
+	
+	if (*((int32_t *) &data[i+2]) != 'FIFJ')
+	{
+		fprintf(stderr, "ERROR: File has no proper JFIF header\n");
+		return 3;
+	}
+	
+	
 	
 	return 0;
 }
