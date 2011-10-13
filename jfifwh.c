@@ -10,8 +10,9 @@ int
 process (char const *srcfn)
 {
 	int fd;
-	u_char *data;
-	size_t data_length, i;
+	u_char *data, type;
+	size_t data_length, i, block_length;
+	u_int height, width;
 	struct stat fs;
 	
 	fd = open(srcfn,  O_RDONLY);
@@ -43,7 +44,44 @@ process (char const *srcfn)
 		return 3;
 	}
 	
+	block_length = (data[i] << 8) + data[i+1];
 	
+	for (;;)
+	{
+		printf("%ld: %ld\n", i, block_length);
+		
+		i += block_length;
+		if (i + 4 >= data_length)
+		{
+			fprintf(stderr, "ERROR: File is truncated\n");
+			return 4;
+		}
+		
+		if (data[i] != 0xff)
+		{
+			fprintf(stderr, "ERROR: Block has no 0xFF mark at %ld\n", i);
+			return 5;
+		}
+		
+		type = data[i+1];
+		
+		if (type == 0xc0)
+		{
+			height = (data[i+5] << 8) + data[i+6];
+			width = (data[i+7] << 8) + data[i+8];
+			printf("%dx%d\n", width, height);
+			break;
+		}
+		
+		if (type == 0xd9)
+		{
+			break;
+		}
+		
+		i += 2;
+		
+		block_length = (data[i] << 8) + data[i+1];
+	}
 	
 	return 0;
 }
