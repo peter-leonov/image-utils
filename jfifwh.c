@@ -61,6 +61,12 @@ process (char const *srcfn)
 		
 		if (type == 0xc0 || type == 0xc2)
 		{
+			if (i + 8 >= data_length)
+			{
+				fprintf(stderr, "ERROR: File is truncated\n");
+				return 4;
+			}
+			
 			height = (data[i+5] << 8) + data[i+6];
 			width = (data[i+7] << 8) + data[i+8];
 			printf("%dx%d\n", width, height);
