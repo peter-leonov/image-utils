@@ -30,19 +30,13 @@ process (char const *srcfn)
 	
 	i = 0;
 	
-	if (*((int32_t *) &data[i]) != 0xe0ffd8ff)
+	if (data[i] != 0xff || data[i+1] != 0xd8)
 	{
-		fprintf(stderr, "ERROR: File has no proper file header\n");
+		fprintf(stderr, "ERROR: File has no proper Start Of Image block\n");
 		return 3;
 	}
 	
 	i += 4;
-	
-	if (*((int32_t *) &data[i+2]) != 'FIFJ' || data[i+6] != 0)
-	{
-		fprintf(stderr, "ERROR: File has no proper JFIF header\n");
-		return 3;
-	}
 	
 	block_length = (data[i] << 8) + data[i+1];
 	
