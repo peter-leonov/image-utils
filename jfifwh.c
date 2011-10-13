@@ -27,7 +27,7 @@ process (char const *srcfn)
 	
 	printf("%ld\n", data_length);
 	
-	data = 0;
+	data = mmap(0, data_length, PROT_READ, MAP_SHARED, fd, 0);
 	
 	return 0;
 }
