@@ -1,3 +1,5 @@
+// thank Michael Petrov (http://michaelpetrov.com/)
+// for this post http://www.64lines.com/jpeg-width-height
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
