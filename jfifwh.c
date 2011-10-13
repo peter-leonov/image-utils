@@ -25,9 +25,13 @@ process (char const *srcfn)
 	
 	data_length = fs.st_size;
 	
-	printf("%ld\n", data_length);
-	
 	data = mmap(0, data_length, PROT_READ, MAP_SHARED, fd, 0);
+	
+	if (((int32_t *) data)[0] != 0xe0ffd8ff)
+	{
+		fprintf(stderr, "ERROR: File has no JFIF for header\n");
+		return 3;
+	}
 	
 	return 0;
 }
