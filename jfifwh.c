@@ -37,7 +37,7 @@ process (char const *srcfn)
 	
 	i += 4;
 	
-	if (*((int32_t *) &data[i+2]) != 'FIFJ')
+	if (*((int32_t *) &data[i+2]) != 'FIFJ' || data[i+6] != 0)
 	{
 		fprintf(stderr, "ERROR: File has no proper JFIF header\n");
 		return 3;
