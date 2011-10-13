@@ -65,7 +65,7 @@ process (char const *srcfn)
 		
 		type = data[i+1];
 		
-		if (type == 0xc0)
+		if (type == 0xc0 || type == 0xc2)
 		{
 			height = (data[i+5] << 8) + data[i+6];
 			width = (data[i+7] << 8) + data[i+8];
