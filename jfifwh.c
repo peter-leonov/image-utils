@@ -48,7 +48,7 @@ process (char const *srcfn)
 	
 	for (;;)
 	{
-		printf("%ld: %ld\n", i, block_length);
+		// printf("%ld: %ld\n", i, block_length);
 		
 		i += block_length;
 		if (i + 4 >= data_length)
@@ -70,7 +70,7 @@ process (char const *srcfn)
 			height = (data[i+5] << 8) + data[i+6];
 			width = (data[i+7] << 8) + data[i+8];
 			printf("%dx%d\n", width, height);
-			break;
+			return 0;
 		}
 		
 		if (type == 0xd9)
@@ -83,7 +83,7 @@ process (char const *srcfn)
 		block_length = (data[i] << 8) + data[i+1];
 	}
 	
-	return 0;
+	return 6;
 }
 
 int main (int argc, char const *argv[])
