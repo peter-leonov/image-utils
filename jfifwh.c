@@ -55,7 +55,7 @@ process (char const *srcfn)
 		
 		if (data[i] != 0xff)
 		{
-			fprintf(stderr, "ERROR: Block has no 0xFF mark at %ld: 0x%x\n", i, data[i]);
+			fprintf(stderr, "ERROR: Block has no 0xFF mark at %zu: 0x%x\n", i, data[i]);
 			return 5;
 		}
 		
