@@ -18,8 +18,7 @@ try_jpeg (u_char *data, size_t data_length, u_int *width, u_int *height)
 	
 	if (data[i] != 0xff || data[i+1] != 0xd8)
 	{
-		fprintf(stderr, "ERROR: File has no proper Start Of Image block\n");
-		return 3;
+		return -1;
 	}
 	
 	i += 4;
@@ -103,6 +102,8 @@ process (char const *srcfn)
 	{
 		return rc;
 	}
+	
+	fprintf(stderr, "ERROR: File format is neither jpeg nor png.\n");
 	
 	return 6;
 }
