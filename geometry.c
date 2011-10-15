@@ -70,6 +70,27 @@ try_jpeg (u_char *data, size_t data_length, u_int *width, u_int *height)
 	return "file is totally truncated";
 }
 
+char *
+try_png (u_char *data, size_t data_length, u_int *width, u_int *height)
+{
+	if (data_length < 32)
+	{
+		return "file is truncated";
+	}
+	
+	// printf("%lx\n", (long unsigned int) ((int64_t *) &data[0])[0]);
+	if (((int64_t *) &data[0])[0] != 0x0a1a0a0d474e5089)
+	{
+		// 89 50 4E 47 0D 0A 1A 0A
+		return "file has not PNG signature";
+	}
+	
+	*width  = (data[16] << 24) + (data[17] << 16) + (data[18] << 8) + data[19];
+	*height = (data[20] << 24) + (data[21] << 16) + (data[22] << 8) + data[23];
+	
+	return RC_OK;
+}
+
 int
 process (char const *srcfn)
 {
@@ -93,6 +114,7 @@ process (char const *srcfn)
 	
 	data = mmap(0, data_length, PROT_READ, MAP_SHARED, fd, 0);
 	
+	
 	rc = try_jpeg(data, data_length, &width, &height);
 	if (rc == RC_OK)
 	{
@@ -103,6 +125,18 @@ process (char const *srcfn)
 	{
 		fprintf(stderr, "ERROR: %s\n", rc);
 	}
+	
+	rc = try_png(data, data_length, &width, &height);
+	if (rc == RC_OK)
+	{
+		printf("%dx%d\n", width, height);
+		return 0;
+	}
+	if (rc != RC_NEXT)
+	{
+		fprintf(stderr, "ERROR: %s\n", rc);
+	}
+	
 	
 	fprintf(stderr, "ERROR: File format is neither jpeg nor png.\n");
 	
