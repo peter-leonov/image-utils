@@ -8,7 +8,10 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 
-int
+static char *rc_ok = "ok";
+static char *rc_next = "next";
+
+char *
 try_jpeg (u_char *data, size_t data_length, u_int *width, u_int *height)
 {
 	u_char type;
@@ -18,7 +21,7 @@ try_jpeg (u_char *data, size_t data_length, u_int *width, u_int *height)
 	
 	if (data[i] != 0xff || data[i+1] != 0xd8)
 	{
-		return -1;
+		return rc_next;
 	}
 	
 	i += 4;
@@ -32,14 +35,12 @@ try_jpeg (u_char *data, size_t data_length, u_int *width, u_int *height)
 		i += block_length;
 		if (i + 4 >= data_length)
 		{
-			fprintf(stderr, "ERROR: File is truncated\n");
-			return 4;
+			return "file is truncated";
 		}
 		
 		if (data[i] != 0xff)
 		{
-			fprintf(stderr, "ERROR: Block has no 0xFF mark at %zu: 0x%x\n", i, data[i]);
-			return 5;
+			return "block has broken 0xFF mark";
 		}
 		
 		type = data[i+1];
@@ -48,13 +49,12 @@ try_jpeg (u_char *data, size_t data_length, u_int *width, u_int *height)
 		{
 			if (i + 8 >= data_length)
 			{
-				fprintf(stderr, "ERROR: File is truncated\n");
-				return 4;
+				return "file is truncated";
 			}
 			
 			*height = (data[i+5] << 8) + data[i+6];
 			*width = (data[i+7] << 8) + data[i+8];
-			return 0;
+			return rc_ok;
 		}
 		
 		if (type == 0xd9)
@@ -67,13 +67,14 @@ try_jpeg (u_char *data, size_t data_length, u_int *width, u_int *height)
 		block_length = (data[i] << 8) + data[i+1];
 	}
 	
-	return 6;
+	return "file is totally truncated";
 }
 
 int
 process (char const *srcfn)
 {
-	int fd, rc;
+	int fd;
+	char *rc;
 	u_char *data;
 	size_t data_length;
 	struct stat fs;
@@ -83,7 +84,7 @@ process (char const *srcfn)
 	if (fd == -1)
 	{
 		perror("ERROR: Can't open the file for reading");
-		return 2;
+		return 1;
 	}
 	
 	fstat(fd, &fs);
@@ -93,14 +94,14 @@ process (char const *srcfn)
 	data = mmap(0, data_length, PROT_READ, MAP_SHARED, fd, 0);
 	
 	rc = try_jpeg(data, data_length, &width, &height);
-	if (rc == 0)
+	if (rc == rc_ok)
 	{
 		printf("%dx%d\n", width, height);
 		return 0;
 	}
-	if (rc != -1)
+	if (rc != rc_next)
 	{
-		return rc;
+		fprintf(stderr, "ERROR: %s\n", rc);
 	}
 	
 	fprintf(stderr, "ERROR: File format is neither jpeg nor png.\n");
