@@ -8,8 +8,8 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 
-static char *rc_ok = "ok";
-static char *rc_next = "next";
+static char *RC_OK = "ok";
+static char *RC_NEXT = "next";
 
 char *
 try_jpeg (u_char *data, size_t data_length, u_int *width, u_int *height)
@@ -21,7 +21,7 @@ try_jpeg (u_char *data, size_t data_length, u_int *width, u_int *height)
 	
 	if (data[i] != 0xff || data[i+1] != 0xd8)
 	{
-		return rc_next;
+		return RC_NEXT;
 	}
 	
 	i += 4;
@@ -54,7 +54,7 @@ try_jpeg (u_char *data, size_t data_length, u_int *width, u_int *height)
 			
 			*height = (data[i+5] << 8) + data[i+6];
 			*width = (data[i+7] << 8) + data[i+8];
-			return rc_ok;
+			return RC_OK;
 		}
 		
 		if (type == 0xd9)
@@ -94,12 +94,12 @@ process (char const *srcfn)
 	data = mmap(0, data_length, PROT_READ, MAP_SHARED, fd, 0);
 	
 	rc = try_jpeg(data, data_length, &width, &height);
-	if (rc == rc_ok)
+	if (rc == RC_OK)
 	{
 		printf("%dx%d\n", width, height);
 		return 0;
 	}
-	if (rc != rc_next)
+	if (rc != RC_NEXT)
 	{
 		fprintf(stderr, "ERROR: %s\n", rc);
 	}
