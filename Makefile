@@ -1,7 +1,7 @@
-all: pngm jfifwh
+all: pngm geometry
 
 pngm: pngm.c
 	gcc pngm.c -Wall -Werror -O2 -o pngm
 
-jfifwh: jfifwh.c
-	gcc jfifwh.c -Wall -Werror -O2 -o jfifwh
+geometry: geometry.c
+	gcc geometry.c -Wall -Werror -O2 -o geometry
