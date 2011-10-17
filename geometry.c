@@ -147,7 +147,7 @@ int main (int argc, char const *argv[])
 {
 	if (argc != 2)
 	{
-		printf("%s\n", "Usage:\n  jfifwh image.jpg");
+		printf("%s\n", "Usage:\n  geometry image.[jpg|png]");
 		return 1;
 	}
 	
