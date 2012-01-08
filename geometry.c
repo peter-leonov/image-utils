@@ -79,10 +79,10 @@ try_png (u_char *data, size_t data_length, u_int *width, u_int *height)
 	}
 	
 	// printf("%lx\n", (long unsigned int) ((int64_t *) &data[0])[0]);
-	if (((int64_t *) &data[0])[0] != 0x0a1a0a0d474e5089)
+	if (data[0] != 0x89 || data[1] != 0x50 || data[2] != 0x4e || data[3] != 0x47 || data[4] != 0x0d || data[5] != 0x0a || data[6] != 0x1a || data[7] != 0x0a)
 	{
 		// 89 50 4E 47 0D 0A 1A 0A
-		return "file has not PNG signature";
+		return "file has no PNG signature";
 	}
 	
 	*width  = (data[16] << 24) + (data[17] << 16) + (data[18] << 8) + data[19];
